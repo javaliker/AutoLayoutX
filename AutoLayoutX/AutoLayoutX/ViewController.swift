@@ -1,10 +1,13 @@
-# AutoLayoutX
-make your autoLayout living easily
+//
+//  ViewController.swift
+//  AutoLayoutX
+//
+//  Created by iDevFans on 16/9/25.
+//  Copyright © 2016年 macdev. All rights reserved.
+//
 
+import Cocoa
 
-
-
-```
 class ViewController: NSViewController {
 
     lazy var subView: NSView = {
@@ -33,4 +36,3 @@ class ViewController: NSViewController {
 
 }
 
-```
