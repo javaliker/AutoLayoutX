@@ -32,9 +32,9 @@ public typealias LayoutRelation = (item1:AnyObject,attr1:NSLayoutAttribute,op:NS
 public typealias ConstantLayoutRelation = (attr:NSLayoutAttribute,op:NSLayoutRelation,c:CGFloat)
 
 extension View {
-
+    
     // MARK: Helper Function
-
+    
     func constraint(_ layoutRelation:LayoutRelation) ->NSLayoutConstraint {
         let item1 = layoutRelation.item1
         let attr1 = layoutRelation.attr1
@@ -43,21 +43,21 @@ extension View {
         let attr2 = layoutRelation.attr2
         let m = layoutRelation.m
         let c = layoutRelation.c
-
+        
         let constraint = NSLayoutConstraint.init(item:item1 , attribute: attr1, relatedBy: op, toItem:item2, attribute: attr2, multiplier: m, constant: c)
-   
+        
         return constraint
     }
-
+    
     func constraint(_ constant:ConstantLayoutRelation) ->NSLayoutConstraint {
         let item1 = self
         let attr1 = constant.attr
         let op = constant.op
         let attr2 = attr1
         let c = constant.c
-
+        
         let constraint = NSLayoutConstraint.init(item:item1 , attribute: attr1, relatedBy: op, toItem:nil, attribute: attr2, multiplier: 1.0, constant: c)
-   
+        
         return constraint
     }
     
@@ -65,11 +65,11 @@ extension View {
         
         let constraint = NSLayoutConstraint.init(item: self, attribute: attr1, relatedBy: op, toItem: toView, attribute: attr2, multiplier: 1.0, constant: constant)
         constraint.priority = priority
-    
+        
         return constraint
     }
     
-
+    
     func constraint(_ any:Any,_ newValue:Any) ->NSLayoutConstraint {
         
         var c: CGFloat = 0
@@ -90,9 +90,9 @@ extension View {
         else {
             // = constant and  >= 10
             if newValue is (CGFloat,NSLayoutRelation) {
-               let temp = newValue as!  (CGFloat,NSLayoutRelation)
-               c  = temp.0
-               op = temp.1
+                let temp = newValue as!  (CGFloat,NSLayoutRelation)
+                c  = temp.0
+                op = temp.1
             }
             else {
                 if newValue is Int {
@@ -126,7 +126,7 @@ extension View {
         var item2: AnyObject?
         var attr2: NSLayoutAttribute
         if value0 is ViewLayoutAttribute {
-    
+            
             let toViewAttr = value.0 as! ViewLayoutAttribute
             item2 = toViewAttr.0
             attr2 = toViewAttr.1
@@ -147,7 +147,7 @@ extension View {
     
     
     func addPaddingsConstraint(_ view:View,_ paddings:(CGFloat,CGFloat,CGFloat,CGFloat)) {
-       
+        
         let leftMargin = paddings.0
         let rightMargin = paddings.1
         let topMargin =  paddings.2
@@ -169,9 +169,9 @@ extension View {
         let left = self.constraint(self.left,lValue)
         NSLayoutConstraint.activate([top,right,bottom,left])
     }
-
     
-    func formatValue(_ view: View , _ newValue: Any) -> (View,(CGFloat,CGFloat,CGFloat,CGFloat)){
+    
+    /*func formatValue(_ view: View , _ newValue: Any) -> (View,(CGFloat,CGFloat,CGFloat,CGFloat)){
         
         var value:(View,(CGFloat,CGFloat,CGFloat,CGFloat))
         if newValue is (View,(CGFloat,CGFloat,CGFloat,CGFloat)) {
@@ -204,12 +204,13 @@ extension View {
         NSLog(" view = \(value.0), margin= \(value.1)")
         
         return value
-    }
+    }*/
+    
     
     
     func formatValue(_ viewMargin: (View,Any)
-) -> (View,(CGFloat,CGFloat,CGFloat,CGFloat)){
-    
+        ) -> (View,(CGFloat,CGFloat,CGFloat,CGFloat)){
+        
         let view = viewMargin.0
         let newValue = viewMargin.1
         
@@ -241,7 +242,7 @@ extension View {
         
         return value
     }
-
+    
     
     func cgFloatFormatValues(_ value:Any) -> [CGFloat] {
         let formatValues = self.cgFloatFormat(value)
@@ -370,12 +371,12 @@ extension View {
                 viewAttr = (view,.width)
                 anchor = self.width
                 break
-            
+                
             default:
                 viewAttr = (view,.height)
                 anchor = self.height
                 break
-             
+                
             }
             item2Attr = (viewAttr,constants[index],.equal)
             index = index + 1
@@ -392,7 +393,7 @@ extension View {
         
         let formatValue = self.cgFloatFormatValues(newValue)
         var constants:[CGFloat] = [0,0]
-
+        
         if formatValue.count > 0  {
             if formatValue.count == 1 {
                 constants[0] = formatValue[0]
@@ -406,7 +407,7 @@ extension View {
             let centerYRelation: ConstantLayoutRelation = (attr:.height,op:.equal,c:constants[1])
             let cententXConstraint = self.constraint(cententXRelation)
             let cententYConstraint = self.constraint(centerYRelation)
-
+            
             return [cententXConstraint,cententYConstraint]
         }
         else if newValue is View {
@@ -414,14 +415,14 @@ extension View {
             let cententXConstraint = self.constraint(self.centerX,view.centerX)
             let cententYConstraint = self.constraint(self.centerY,view.centerY)
             return [cententXConstraint,cententYConstraint]
-
+            
         }
         else if newValue is (Any,CGFloat,NSLayoutRelation) {
             // center + 10
             let viewSizeAttribute = newValue as! (Any,CGFloat,NSLayoutRelation)
             let view = viewSizeAttribute.0 as! View
             let constant = viewSizeAttribute.1
-
+            
             return self.attrConstraint(toView: view, attrs: [.centerX,.centerY], constants: [constant,constant])
         }
         else if newValue is  (View,Any) {
@@ -431,7 +432,7 @@ extension View {
             let size:(CGFloat,CGFloat) = self.cgFloatFormat(value.1) as! (CGFloat,CGFloat)
             
             return self.attrConstraint(toView: view, attrs: [.centerX,.centerY], constants: [size.0,size.1])
-
+            
         }
         else if newValue is  (View,[NSLayoutAttribute])  {
             //center = center
@@ -441,7 +442,7 @@ extension View {
             let cententYConstraint = self.constraint(self.centerY,view.centerY)
             return [cententXConstraint,cententYConstraint]
         }
-    
+        
         return []
     }
     
@@ -506,6 +507,11 @@ extension View {
 //MARK: Autolayout  Properties
 
 extension View {
+    
+    func removeAllConstraint() {
+        self.removeConstraints(self.constraints)
+    }
+    
     
     //MARK: Autolayout  Properties
     var left: Any {
@@ -597,7 +603,7 @@ extension View {
         }
     }
     
-
+    
     
     var size: Any {
         get {
@@ -682,7 +688,7 @@ extension View {
             let leftMargin = paddings.3
             
             self.addPaddingsConstraint(view,(leftMargin,rightMargin,topMargin,bottomMargin))
-          
+            
         }
     }
     
@@ -711,7 +717,7 @@ extension View {
             let rightMargin = paddings.3
             
             self.addPaddingsConstraint(view,(leftMargin,rightMargin,topMargin,bottomMargin))
-          
+            
         }
     }
     
@@ -739,7 +745,7 @@ extension View {
             var leftMargin: CGFloat
             
             if formatPadding is (CGFloat,CGFloat,CGFloat,CGFloat) {
-               
+                
                 let paddings = formatPadding  as! (CGFloat,CGFloat,CGFloat,CGFloat)
                 
                 topMargin    = paddings.0
@@ -750,7 +756,7 @@ extension View {
                 self.addPaddingsConstraint(view,(leftMargin,rightMargin,topMargin,bottomMargin))
             }
             else  if formatPadding is (CGFloat,CGFloat,CGFloat) {
-               
+                
                 let paddings = formatPadding  as! (CGFloat,CGFloat,CGFloat)
                 
                 topMargin    = paddings.0
@@ -761,7 +767,7 @@ extension View {
                 self.addPaddingsConstraint(view,(leftMargin,rightMargin,topMargin,bottomMargin))
             }
             else if formatPadding is (CGFloat,CGFloat) {
-               
+                
                 let paddings = formatPadding  as! (CGFloat,CGFloat)
                 
                 topMargin    = paddings.0
@@ -783,27 +789,35 @@ extension View {
                 self.addPaddingsConstraint(view,(leftMargin,rightMargin,topMargin,bottomMargin))
                 
             }
-           
+            
         }
     }
-
+    
 }
 
 // MARK: Operator Override
 
-infix operator >= { associativity right precedence 90 }
-infix operator <= { associativity right precedence 90 }
+
+
+
+//infix operator >= { associativity right precedence 90 }
+//infix operator <= { associativity right precedence 90 }
 
 //infix operator &  { associativity left precedence 10  }
 //infix operator +  { associativity right precedence 90  }
 
 
-// @ priority
-func &(lhs:Any, rhs:Int)-> Any {
-    return (lhs,rhs)
-}
+//infix operator ~{ associativity left precedence 80 }
 
- 
+
+
+
+// @ priority
+/*func ~(lhs:Any, rhs:Int)-> Any {
+    return (lhs,rhs)
+}*/
+
+
 //margin  view + (10,20,30,40)
 func +(lhs:View, rhs:Any)-> (View,Any) {
     return (lhs,rhs)
@@ -824,7 +838,6 @@ func +(lhs:Any, rhs:(Double,Double)) -> (View,Any) {
     let sizeAttr: (View,[NSLayoutAttribute]) = lhs as!  (View,[NSLayoutAttribute])
     return (sizeAttr.0,rhs)
 }
-
 
 func +(lhs:Any, rhs:CGFloat) -> (Any,CGFloat,NSLayoutRelation) {
     if lhs is (Any,CGFloat,NSLayoutRelation) {
@@ -855,7 +868,7 @@ func -(lhs:Any, rhs:CGFloat) -> (Any,CGFloat,NSLayoutRelation) {
         return (tuple.0,rhs * (-1),.equal)
     }
     else {
-         return (lhs,rhs * (-1),.equal)
+        return (lhs,rhs * (-1),.equal)
     }
 }
 
@@ -871,10 +884,16 @@ func >=( lhs:inout Any, rhs:Any) {
         let ret:(Any,CGFloat,NSLayoutRelation) = (tuple.0,0,.greaterThanOrEqual)
         lhs = ret
     }
+    else if rhs is ViewLayoutAttribute {
+        //size - 10
+        let tuple = rhs as! ViewLayoutAttribute
+        let ret:(Any,CGFloat,NSLayoutRelation) = (tuple.0,0,.greaterThanOrEqual)
+        lhs = ret
+    }
     else {
-         let const =  CGFloat((rhs as? NSNumber)!)
-         let ret:(CGFloat,NSLayoutRelation) = (const,.greaterThanOrEqual)
-         lhs = ret
+        let const =  CGFloat((rhs as? NSNumber)!)
+        let ret:(CGFloat,NSLayoutRelation) = (const,.greaterThanOrEqual)
+        lhs = ret
     }
 }
 
@@ -890,9 +909,16 @@ func <=(lhs:inout Any, rhs:Any) {
         let ret:(Any,CGFloat,NSLayoutRelation) = (tuple.0,0,.lessThanOrEqual)
         lhs = ret
     }
+    else if rhs is ViewLayoutAttribute {
+        //size - 10
+        let tuple = rhs as! ViewLayoutAttribute
+        let ret:(Any,CGFloat,NSLayoutRelation) = (tuple.0,0,.lessThanOrEqual)
+        lhs = ret
+    }
     else {
-         let const =  CGFloat((rhs as? NSNumber)!)
-         let ret:(CGFloat,NSLayoutRelation) = (const,.lessThanOrEqual)
-         lhs = ret
+        let const =  CGFloat((rhs as? NSNumber)!)
+        let ret:(CGFloat,NSLayoutRelation) = (const,.lessThanOrEqual)
+        lhs = ret
     }
 }
+
